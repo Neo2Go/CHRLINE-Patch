@@ -28,9 +28,6 @@ class E2EE(ChrHelperProtocol):
         self.__logger = self.client.get_logger("E2EE")
         self.__e2ee_key_id = None
         self.__cache_key = {}
-        self.refreshE2EEKeyId()
-    def refreshE2EEKeyId(self):
-        """Refresh E2EE Key ID."""
         r = self.client.getE2EEPublicKeys()
         if isinstance(r, list) and len(r) > 0:
             self.__e2ee_key_id = r[0][2]
@@ -444,14 +441,11 @@ class E2EE(ChrHelperProtocol):
         privK = base64.b64decode(selfKey["privKey"])
         if toType == 0:
             # patch to use correct key by id
-            selfKeyId = receiverKeyId if messageObj.from_type == 1 else senderKeyId
-            selfKey = self.client.getE2EESelfKeyDataByKeyId(selfKeyId)
+            selfKey = self.client.getE2EESelfKeyDataByKeyId(receiverKeyId)
             if selfKey is None:
-                raise ValueError(f"selfKey should not be None. KeyId={selfKeyId}")
+                raise ValueError(f"selfKey should not be None. KeyId={receiverKeyId}")
             privK = base64.b64decode(selfKey["privKey"])
-            pubK = self.getE2EELocalPublicKey(
-                _from, senderKeyId if messageObj.from_type == 1 else receiverKeyId
-            )
+            pubK = self.getE2EELocalPublicKey(_from, senderKeyId)
         else:
             selfKey = self.client.getE2EESelfKeyDataByKeyId(self.__e2ee_key_id)
             if selfKey is None:
