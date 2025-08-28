@@ -9,3 +9,7 @@
 # DO NOT UPDATE THRIFT FILES PUBLIC THIS REPO
 /CHRLINE/services/thrift/*Service.py
 /CHRLINE/services/thrift/*Service-remote
+*.egg-info/
+build/
+dist/
+__pycache__/
