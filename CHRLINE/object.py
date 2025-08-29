@@ -565,7 +565,10 @@ class Object(ChrHelperProtocol):
         }
 
         hr = self.client.server.additionalHeaders(
-            self.client.server.timelineHeaders,
+            {
+                'x-line-application': self.client.server.Headers["x-line-application"],
+                'X-Line-Access':self.authToken
+            },
             {
                 "x-client-channel": "chat_viewer",
                 "x-lal": "zh-Hant_TW",
