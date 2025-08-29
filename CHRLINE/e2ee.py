@@ -441,11 +441,14 @@ class E2EE(ChrHelperProtocol):
         privK = base64.b64decode(selfKey["privKey"])
         if toType == 0:
             # patch to use correct key by id
-            selfKey = self.client.getE2EESelfKeyDataByKeyId(receiverKeyId)
+            selfKeyId = receiverKeyId if messageObj.from_type == 1 else senderKeyId
+            selfKey = self.client.getE2EESelfKeyDataByKeyId(selfKeyId)
             if selfKey is None:
-                raise ValueError(f"selfKey should not be None. KeyId={receiverKeyId}")
+                raise ValueError(f"selfKey should not be None. KeyId={selfKeyId}")
             privK = base64.b64decode(selfKey["privKey"])
-            pubK = self.getE2EELocalPublicKey(_from, senderKeyId)
+            pubK = self.getE2EELocalPublicKey(
+                _from, senderKeyId if messageObj.from_type == 1 else receiverKeyId
+            )
         else:
             selfKey = self.client.getE2EESelfKeyDataByKeyId(self.__e2ee_key_id)
             if selfKey is None:
