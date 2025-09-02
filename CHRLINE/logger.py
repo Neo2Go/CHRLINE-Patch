@@ -106,7 +106,10 @@ class Logger:
         """Set root-logger level."""
         filter1 = NsFliter(ns=names)
         h.addFilter(filter1)
-
+    def add_log_Handlers(self, *handlers: logging.Handler):
+        """เพิ่ม handlers ให้ root logger."""
+        for handler in handlers:
+            root.addHandler(handler)
 class NsFliter(logging.Filter):
     def __init__(self, ns: Tuple[str]):
         self.ns = ns

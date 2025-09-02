@@ -11,7 +11,7 @@ from .object import Object
 from .poll import Poll
 from .thrift import Thrift
 from .utils.common import get_opt_env
-
+import logging
 
 class CHRLINE(
     ChrHelper,
@@ -45,6 +45,7 @@ class CHRLINE(
         rootLogLevel: int = 20,
         logFilterNs: List[str] = [],
         *,
+        logHandlers: Optional[List[logging.Handler]] = [],
         genThriftPath: Optional[str] = None,
         supportTokenV3: Optional[bool] = None,
         supportSync: Optional[bool] = None,
@@ -107,6 +108,8 @@ class CHRLINE(
         self.logger.set_root_level(rootLogLevel)
         if logFilterNs:
             self.logger.add_log_fliters(*logFilterNs)
+        if logHandlers:
+            self.logger.add_log_Handlers(*logHandlers)
         Models.__init__(self, get_opt_env("CHR_SAVE_PATH", value=savePath))
         Config.__init__(self, device, version, os_name, os_version, os_model, support_v3_token=supportTokenV3, support_sync=supportSync)
         self.LINE_LANGUAGE = get_opt_env("CHR_API_LANGUAGE", "zh-Hant_TW")
