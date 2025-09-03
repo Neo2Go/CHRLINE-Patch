@@ -299,7 +299,7 @@ class Object(ChrHelperProtocol):
             "ver": "2.0",  # 2.0 :p
         }
         hr = self.client.server.additionalHeaders(
-            self.client.server.timelineHeaders,
+            self.client.biz.headers_with_timeline,
             {
                 "Content-Type": contentType,
                 "Content-Length": str(len(file)),
@@ -535,11 +535,11 @@ class Object(ChrHelperProtocol):
             data["cat"] = "original"
         elif contentType in ["audio", "video"]:
             data["duration"] = "3000"
-        print(self.client.server.timelineHeaders)
+        print(self.client.biz.headers_with_timeline)
         r = self.client.server.postContent(
             self.client.LINE_HOST_DOMAIN + "/oa/r/talk/m/reqseq/copy.nhn",
             data=data,
-            headers=self.client.server.timelineHeaders,
+            headers=self.client.biz.headers_with_timeline,
         )
         if not self.client.checkRespIsSuccessWithLpv(r):
             raise Exception(f"Forward object failure: {r.status_code}")
@@ -565,7 +565,7 @@ class Object(ChrHelperProtocol):
         }
 
         hr = self.client.server.additionalHeaders(
-            self.client.server.timelineHeaders,
+            self.client.biz.headers_with_timeline,
             {
                 "x-client-channel": "chat_viewer",
                 "x-lal": "zh-Hant_TW",
@@ -593,7 +593,7 @@ class Object(ChrHelperProtocol):
         obs_path = f"/album/a/download.nhn?ver=1.0&oid={oid}"
         r = self.client.server.getContent(
             self.client.LINE_OBS_DOMAIN + obs_path,
-            headers=self.client.server.timelineHeaders,
+            headers=self.client.biz.headers_with_timeline,
         )
         with open(path, "wb") as f:
             f.write(r.content)
@@ -619,7 +619,7 @@ class Object(ChrHelperProtocol):
             url += "/vp"
             savePath = f"{base_path}/{mid}.mp4"
         r = self.client.server.getContent(
-            url, headers=self.client.server.timelineHeaders
+            url, headers=self.client.biz.headers_with_timeline
         )
         with open(savePath, "wb") as f:
             f.write(r.content)
@@ -629,7 +629,7 @@ class Object(ChrHelperProtocol):
         url, vc_url, objId, vc_objId = self.client.getProfileCoverObjIdAndUrl(mid)
         savePath = f"{base_path}/{mid}.jpg"
         r = self.client.server.getContent(
-            url, headers=self.client.server.timelineHeaders
+            url, headers=self.client.biz.headers_with_timeline
         )
         with open(savePath, "wb") as f:
             f.write(r.content)
@@ -911,7 +911,7 @@ class Object(ChrHelperProtocol):
             "lang": "zh",
         }
         hr = self.client.server.additionalHeaders(
-            self.client.server.timelineHeaders,
+            self.client.biz.headers_with_timeline,
             {
                 "x-obs-channeltype": "legy",
             },

@@ -6,9 +6,16 @@ from .internal.define_typed.Album import TAlbumPhoto
 if TYPE_CHECKING:
     from ...client import CHRLINE
 
+T_ORDER_BY = Literal["createTimeDesc", "updateTimeDesc"]
+T_FILTER_TYPE = Literal["specificUser"]
+T_VIEW_TYPE = Literal["chatMenu", "selectAlbum"]
+T_LIKE_TYPE = Literal["1001", "1002", "1003", "1004", "1005", "1006"]
+T_REFERRER_TYPE = Literal["MOA", "NOTI_LIKE", "NONE"]
+
+V_NEW_VERSION = None
+
 
 class Album(BaseBIZApi):
-
     def __init__(self, client: "CHRLINE", version: int):
         super().__init__(client, version=version, prefix="/ext/album")
 
@@ -23,12 +30,20 @@ class Album(BaseBIZApi):
             {"X-Line-ChannelToken": self.client.biz.token_with_album},
         )
 
-    def ext_headers(self, *, chatId: Optional[str] = None):
+    def ext_headers(
+        self,
+        *,
+        chatId: Optional[str] = None,
+        referrerType: Optional[T_REFERRER_TYPE] = None,
+    ):
         hr = {}
         if chatId is not None:
             hr["x-line-chat-id"] = chatId
-        else:
-            hr["x-line-album-referrer"] = "MOA"
+
+            # TODO: auto repair referrerType to MOA?
+
+        if referrerType is not None:
+            hr["x-line-album-referrer"] = referrerType
         return self.client.server.additionalHeaders(self.headers, hr)
 
     def url(self, path: str, *, version: Optional[int] = None, prefix: str = "albums"):
@@ -69,7 +84,7 @@ class Album(BaseBIZApi):
         self,
         *,
         cursor: str,
-        orderBy: Literal["createTimeDesc", "updateTimeDesc"],
+        orderBy: T_ORDER_BY,
         include: str,
     ):
         params = {"cursor": cursor, "orderBy": orderBy, "include": include}
@@ -120,7 +135,7 @@ class Album(BaseBIZApi):
         albumId: int,
         cursor: str,
         pageSize: int,
-        orderBy: Literal["createTimeDesc", "shotTimeDesc"],
+        orderBy: T_ORDER_BY,
         include: str,
         filterType: str,
         targetUserMid: Optional[str] = None,
@@ -136,7 +151,7 @@ class Album(BaseBIZApi):
         }
         hr = self.ext_headers(chatId=chatId)
         r = self.request(
-            "GET", self.url(f"/{albumId}/photos", version=6), headers=hr, params=params
+            "GET", self.url(f"/{albumId}/photos"), headers=hr, params=params
         )
         return r.json()
 
@@ -162,7 +177,7 @@ class Album(BaseBIZApi):
         *,
         cursor: str,
         pageSize: int,
-        viewType: Literal["chatMenu", "selectAlbum"],
+        viewType: T_VIEW_TYPE,
         thumbnailCount: int = 1,
     ):
         # version: v6
@@ -174,9 +189,7 @@ class Album(BaseBIZApi):
             "viewType": viewType,
         }
         hr = self.ext_headers(chatId=chatId)
-        r = self.request(
-            "GET", self.url("/preview", version=6), headers=hr, params=params
-        )
+        r = self.request("GET", self.url("/preview"), headers=hr, params=params)
         return r.json()
 
     def get_album_promotion_item(
@@ -260,4 +273,73 @@ class Album(BaseBIZApi):
         data = {"title": title}
         hr = self.ext_headers(chatId=chatId)
         r = self.request("POST", self.url(f"/{albumId}/update"), headers=hr, json=data)
+        return r.json()
+
+    def get_photo_download_info(
+        self,
+        chatId: str,
+        *,
+        albumId: int,
+        orderBy: T_ORDER_BY,
+        filterType: T_FILTER_TYPE,
+        targetUserMid: Optional[str],
+    ):
+        params = {
+            "orderBy": orderBy,
+            "filterType": filterType,
+            "targetUser": targetUserMid,
+        }
+        hr = self.ext_headers(chatId=chatId)
+        r = self.request(
+            "GET",
+            self.url(f"/{albumId}/photos/obsDownloadInfo"),
+            headers=hr,
+            params=params,
+        )
+        return r.json()
+
+    def get_photo_likes(
+        self, chatId: str, *, albumId: int, photoId: int, cursor: str, pageSize: int
+    ):
+        params = {"cursor": cursor, "pageSize": pageSize}
+        hr = self.ext_headers(chatId=chatId)
+        r = self.request(
+            "GET",
+            self.url(f"/{albumId}/photos/{photoId}/likes"),
+            headers=hr,
+            params=params,
+        )
+        return r.json()
+
+    def get_photo_likes_preview(
+        self, chatId: str, *, albumId: int, photoId: int, cursor: str, pageSize: int
+    ):
+        params = {}
+        hr = self.ext_headers(chatId=chatId)
+        r = self.request(
+            "GET",
+            self.url(f"/{albumId}/photos/{photoId}/likes/preview"),
+            headers=hr,
+            params=params,
+        )
+        return r.json()
+
+    def delete_photo_like(self, chatId: str, *, albumId: int, photoId: int):
+        hr = self.ext_headers(chatId=chatId)
+        r = self.request(
+            "POST", self.url(f"/{albumId}/photos/{photoId}/likes/delete"), headers=hr
+        )
+        return r.json()
+
+    def create_photo_like(
+        self, chatId: str, *, albumId: int, photoId: int, likeType: T_LIKE_TYPE
+    ):
+        data = {"likeType": likeType}
+        hr = self.ext_headers(chatId=chatId)
+        r = self.request(
+            "POST",
+            self.url(f"/{albumId}/photos/{photoId}/likes/create"),
+            headers=hr,
+            json=data,
+        )
         return r.json()
