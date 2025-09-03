@@ -34,7 +34,7 @@ class BizManager(BaseBIZ):
         self.note = Note(self.client, 57)
         self.home_api = HomeApi(self.client, 1)
         self.note_square = SquareNote(self.client, 57)
-        self.album = Album(self.client, 5)
+        self.album = Album(self.client, 6)
         self.story = Story(self.client, 12)
         self.social_notification = SocialNotification(self.client, 5)
         self.translation = Translation(self.client, -1)
