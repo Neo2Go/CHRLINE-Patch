@@ -28,8 +28,8 @@ class E2EE(ChrHelperProtocol):
         self.__logger = self.client.get_logger("E2EE")
         self.__e2ee_key_id = None
         self.__cache_key = {}
-        self.refreshE2EEKeyId()
-    def refreshE2EEKeyId(self):
+        self.refreshE2EE()
+    def refreshE2EE(self):
         """Refresh E2EE Key ID."""
         r = self.client.getE2EEPublicKeys()
         if isinstance(r, list) and len(r) > 0:
