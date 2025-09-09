@@ -33,6 +33,7 @@ setuptools.setup(
     'thrift',
     'qrcode',
     'Image',
-    'rich'
+    'rich',
+    'python-dotenv'
   ]
 )
