@@ -25,7 +25,7 @@ setuptools.setup(
     'xxhash',
     'rsa',
     'requests',
-    'python-axolotl-curve25519',
+    'pywaves-curve25519',
     'httpx[http2]',
     'h2>=3.2.0',
     'cryptography',

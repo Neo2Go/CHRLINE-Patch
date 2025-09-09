@@ -14,7 +14,7 @@ from types import ModuleType
 from typing import TYPE_CHECKING, Any, Optional, Union
 from urllib.parse import quote
 
-import axolotl_curve25519 as curve
+import pywaves_curve25519 as curve
 import Crypto.Cipher.PKCS1_OAEP as rsaenc
 import httpx
 import requests

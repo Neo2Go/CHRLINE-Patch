@@ -11,7 +11,7 @@ import os
 import secrets
 from typing import Any, Optional, Union
 
-import axolotl_curve25519 as Curve25519
+import pywaves_curve25519 as Curve25519
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from cryptography.hazmat.primitives import hashes, hmac
